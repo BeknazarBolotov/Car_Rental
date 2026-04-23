@@ -8,7 +8,12 @@ connectDB();
 
 const app = express();
 
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+// FIXED CORS (stable)
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Routes
@@ -18,13 +23,21 @@ app.use('/api/bookings', require('./src/routes/bookingRoutes'));
 app.use('/api/users', require('./src/routes/userRoutes'));
 
 // Health check
-app.get('/api/health', (req, res) => res.json({ status: 'OK' }));
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK' });
+});
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Server error', error: err.message });
+  console.error(err);
+  res.status(500).json({
+    message: 'Server error',
+    error: err.message
+  });
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
+});
